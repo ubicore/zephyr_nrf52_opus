@@ -1,0 +1,80 @@
+diff --git a/ext/hal/nordic/CMakeLists.txt b/ext/hal/nordic/CMakeLists.txt
+index 48ab00c..a7f94e2 100644
+--- a/ext/hal/nordic/CMakeLists.txt
++++ b/ext/hal/nordic/CMakeLists.txt
+@@ -46,6 +46,7 @@
+   zephyr_sources_ifdef(CONFIG_NRFX_SYSTICK nrfx/drivers/src/nrfx_systick.c)
+   zephyr_sources_ifdef(CONFIG_NRFX_TIMER   nrfx/drivers/src/nrfx_timer.c)
+   zephyr_sources_ifdef(CONFIG_NRFX_TWI     nrfx/drivers/src/nrfx_twi.c)
++  zephyr_sources_ifdef(CONFIG_NRFX_I2S     nrfx/drivers/src/nrfx_i2s.c)
+   zephyr_sources_ifdef(CONFIG_NRFX_TWIM    nrfx/drivers/src/nrfx_twim.c)
+   zephyr_sources_ifdef(CONFIG_NRFX_UART    nrfx/drivers/src/nrfx_uart.c)
+   zephyr_sources_ifdef(CONFIG_NRFX_UARTE   nrfx/drivers/src/nrfx_uarte.c)
+diff --git a/ext/hal/nordic/Kconfig b/ext/hal/nordic/Kconfig
+index 4a7e9b9..8b5b34e 100644
+--- a/ext/hal/nordic/Kconfig
++++ b/ext/hal/nordic/Kconfig
+@@ -82,6 +82,13 @@
+ config NRFX_TWIM
+ 	bool
+ 
++	
++config NRFX_I2S
++    bool "Select NRFX_I2S"
++    default n
++    help
++      This select NRFX_I2S driver
++
+ config NRFX_UART
+ 	bool
+ 
+diff --git a/ext/hal/nordic/nrfx_config_nrf52840.h b/ext/hal/nordic/nrfx_config_nrf52840.h
+index c0c8142..5b16089 100644
+--- a/ext/hal/nordic/nrfx_config_nrf52840.h
++++ b/ext/hal/nordic/nrfx_config_nrf52840.h
+@@ -346,9 +346,11 @@
+ 
+ // <e> NRFX_I2S_ENABLED - nrfx_i2s - I2S peripheral driver
+ //==========================================================
+-#ifndef NRFX_I2S_ENABLED
+-#define NRFX_I2S_ENABLED 0
++
++#ifdef CONFIG_NRFX_I2S
++#define NRFX_I2S_ENABLED 1
+ #endif
++
+ // <o> NRFX_I2S_CONFIG_SCK_PIN - SCK pin  <0-31>
+ 
+ 
+@@ -483,7 +485,7 @@
+ // <7=> 7
+ 
+ #ifndef NRFX_I2S_CONFIG_IRQ_PRIORITY
+-#define NRFX_I2S_CONFIG_IRQ_PRIORITY 7
++#define NRFX_I2S_CONFIG_IRQ_PRIORITY 1
+ #endif
+ 
+ // <e> NRFX_I2S_CONFIG_LOG_ENABLED - Enables logging in the module.
+@@ -2333,7 +2335,7 @@
+ // <7=> 7
+ 
+ #ifndef NRFX_TIMER_DEFAULT_CONFIG_IRQ_PRIORITY
+-#define NRFX_TIMER_DEFAULT_CONFIG_IRQ_PRIORITY 7
++#define NRFX_TIMER_DEFAULT_CONFIG_IRQ_PRIORITY 1
+ #endif
+ 
+ // <e> NRFX_TIMER_CONFIG_LOG_ENABLED - Enables logging in the module.
+diff --git a/ext/hal/nordic/nrfx_glue.h b/ext/hal/nordic/nrfx_glue.h
+index e174b9e..be1fe94 100644
+--- a/ext/hal/nordic/nrfx_glue.h
++++ b/ext/hal/nordic/nrfx_glue.h
+@@ -183,7 +183,7 @@
+  *
+  * @return Previous value of the atomic object.
+  */
+-#define NRFX_ATOMIC_FETCH_AND(p_data, value)  atomic_and(p_data, value)
++#define NRFX_ATOMIC_FETCH_AND(p_data, value)  atomic_and((atomic_t *)p_data, value)
+ 
+ /**
+  * @brief Macro for running a bitwise XOR operation on an atomic object
+

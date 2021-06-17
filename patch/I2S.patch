@@ -1,0 +1,23 @@
+diff --git a/ext/hal/nordic/nrfx/drivers/src/nrfx_i2s.c b/ext/hal/nordic/nrfx/drivers/src/nrfx_i2s.c
+index eed5f1e..76ba442 100644
+--- a/ext/hal/nordic/nrfx/drivers/src/nrfx_i2s.c
++++ b/ext/hal/nordic/nrfx/drivers/src/nrfx_i2s.c
+@@ -348,8 +348,7 @@
+ #endif
+ }
+ 
+-
+-void nrfx_i2s_irq_handler(void)
++ISR_DIRECT_DECLARE(nrfx_i2s_irq_handler)
+ {
+     if (nrf_i2s_event_check(NRF_I2S, NRF_I2S_EVENT_TXPTRUPD))
+     {
+@@ -431,6 +430,7 @@
+ 
+         }
+     }
++    return 1;
+ }
+ 
+ #endif // NRFX_CHECK(NRFX_I2S_ENABLED)
+
